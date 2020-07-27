@@ -1,11 +1,10 @@
 package hx.ws;
 
+import haxe.io.Bytes;
+
 #if js
-
 typedef BinaryType = js.html.BinaryType;
-
 #else
-
 @:enum abstract BinaryType(String) {
     var ARRAYBUFFER = "arraybuffer";
 
@@ -13,5 +12,9 @@ typedef BinaryType = js.html.BinaryType;
         return this;
     }
 }
-
 #end
+
+enum MessageType {
+    BytesMessage(content: Bytes);
+    StrMessage(content: String);
+}

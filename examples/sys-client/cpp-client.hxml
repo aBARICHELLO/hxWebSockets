@@ -1,4 +1,4 @@
 -cp src
 --main Main
--lib hxWebSockets
+-lib socket-bar
 -cpp bin/cpp

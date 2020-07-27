@@ -1,0 +1,4 @@
+-cp src
+--main Main
+-lib socket-bar
+-hl bin/hl/Main.hl

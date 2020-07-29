@@ -1,4 +1,0 @@
--cp src
---main Main
--lib socket-bar
--neko bin/neko

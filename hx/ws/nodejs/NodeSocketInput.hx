@@ -5,17 +5,18 @@ import js.node.Buffer;
 
 @:access(hx.ws.nodejs.NodeSocket)
 class NodeSocketInput {
-    private var _socket:NodeSocket;
-    
+    private var _socket: NodeSocket;
+
     public var hasData = false;
-    
+
     private var _buffer = null;
-    public function new(socket:NodeSocket) {
+
+    public function new(socket: NodeSocket) {
         _socket = socket;
         _socket._socket.on("data", onData);
     }
-    
-    private function onData(data:Any) {
+
+    private function onData(data: Any) {
         var a = [];
         if (_buffer != null) {
             a.push(_buffer);
@@ -24,12 +25,12 @@ class NodeSocketInput {
         _buffer = Buffer.concat(a);
         hasData = true;
     }
-    
-    public function readBytes(s:Bytes, pos:Int, len:Int):Int {
+
+    public function readBytes(s: Bytes, pos: Int, len: Int): Int {
         if (_buffer == null) {
             return 0;
         }
-        var n:Int = _buffer.length;
+        var n: Int = _buffer.length;
         if (n > len) {
             n = len;
         }

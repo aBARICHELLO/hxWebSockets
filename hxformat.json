@@ -1,0 +1,56 @@
+{
+    "whitespace": {
+        "ternaryPolicy": "around",
+        "typeCheckColonPolicy": "after",
+        "catchPolicy": "after",
+        "functionTypeHaxe4Policy": "after",
+        "compressSuccessiveParenthesis": true,
+        "commaPolicy": "after",
+        "arrowFunctionsPolicy": "around",
+        "addLineCommentSpace": true,
+        "objectFieldColonPolicy": "after",
+        "typeHintColonPolicy": "after"
+    },
+    "sameLine": {
+        "functionBody": "next",
+        "anonFunctionBody": "next"
+    },
+    "wrapping": {
+        "arrayWrap": {
+            "defaultWrap": "fillLine",
+            "rules": [
+                {
+                    "type": "onePerLine",
+                    "conditions": [
+                        {
+                            "value": 2,
+                            "cond": "itemCount >= n"
+                        }
+                    ]
+                }
+            ]
+        },
+        "maxLineLength": 160
+    },
+    "lineEnds": {
+        "caseColon": "after",
+        "blockCurly": {
+            "leftCurly": "after",
+            "emptyCurly": "noBreak"
+        }
+    },
+    "emptyLines": {
+        "beforeDocCommentEmptyLines": "one",
+        "afterFieldsWithDocComments": "one",
+        "importAndUsing": {
+            "betweenImportsLevel": "firstLevelPackage",
+            "betweenImports": 0
+        }
+    },
+    "indentation": {
+        "indentCaseLabels": true,
+        "trailingWhitespace": false,
+        "indentObjectLiteral": true,
+        "character": "    "
+    }
+}

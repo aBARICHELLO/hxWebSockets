@@ -4,24 +4,25 @@ import js.Browser;
 import js.html.DivElement;
 import js.html.TextAreaElement;
 import js.html.WebSocket;
+import hx.ws.Types;
 
 class TestClient {
-    private static var nextId:Int = 0;
-    public var id:Int = 0;
+    private static var nextId: Int = 0;
 
-    private var _info:DivElement;
-    private var _send:TextAreaElement;
-    private var _recv:TextAreaElement;
-    private var _log:TextAreaElement;
+    public var id: Int = 0;
 
-    private var _ws:WebSocket;
+    private var _info: DivElement;
+    private var _send: TextAreaElement;
+    private var _recv: TextAreaElement;
+    private var _log: TextAreaElement;
+
+    private var _ws: WebSocket;
 
     public function new() {
         id = ++nextId;
 
         _info = Browser.document.createDivElement();
         Browser.document.body.appendChild(_info);
-
 
         var button = Browser.document.createButtonElement();
         button.innerText = "Connect";
@@ -73,8 +74,7 @@ class TestClient {
         updateInfo();
     }
 
-    public function init() {
-    }
+    public function init() {}
 
     public function connnect() {
         log("connecting");
@@ -84,9 +84,10 @@ class TestClient {
                 log("connected");
                 updateInfo();
             };
-            _ws.onmessage = function(msg:Dynamic) {
-                log("data received: " + msg);
-                _recv.innerText = msg.data;
+            _ws.onmessage = function(msg: MessageType) {
+                var data = msg.getParameters()[0];
+                log("data received: " + data);
+                _recv.innerText = data;
             };
             _ws.onclose = function() {
                 _ws = null;
@@ -101,7 +102,7 @@ class TestClient {
         }
     }
 
-    public function sendString(s:String) {
+    public function sendString(s: String) {
         log("sending string: len = " + s.length);
         if (_ws == null) {
             log("error: not connected");
@@ -120,7 +121,7 @@ class TestClient {
         _info.innerHTML = info;
     }
 
-    private function log(data:String) {
+    private function log(data: String) {
         _log.value += data + "\r\n";
         _log.scrollTop = _log.scrollHeight;
     }

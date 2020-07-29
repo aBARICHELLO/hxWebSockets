@@ -1,16 +1,15 @@
 package hx.ws;
 
 class HttpRequest {
-    public var method:String = null;
-    public var uri:String = null;
-    public var httpVersion:String = null;
+    public var method: String = null;
+    public var uri: String = null;
+    public var httpVersion: String = null;
 
-    public var headers:Map<String, String> = new Map<String, String>();
+    public var headers: Map<String, String> = new Map<String, String>();
 
-    public function new() {
-    }
+    public function new() {}
 
-    public function addLine(line:String) {
+    public function addLine(line: String) {
         if (method == null) {
             var parts = line.split(" ");
             method = parts[0];
@@ -24,7 +23,7 @@ class HttpRequest {
         }
     }
 
-    public function build():String {
+    public function build(): String {
         var sb = new StringBuf();
 
         sb.add(method);
@@ -47,7 +46,7 @@ class HttpRequest {
         return sb.toString();
     }
 
-    public function toString():String {
+    public function toString(): String {
         return build();
     }
 }

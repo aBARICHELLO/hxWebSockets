@@ -3,7 +3,7 @@ package hx.ws;
 import haxe.io.Bytes;
 
 class WebSocketHandler extends Handler {
-    public function new(socket:SocketImpl) {
+    public function new(socket: SocketImpl) {
         super(socket);
         _socket.setBlocking(false);
         Log.debug('New socket handler', id);
@@ -24,7 +24,7 @@ class WebSocketHandler extends Handler {
         }
     }
 
-    public function handshake(httpRequest:HttpRequest) {
+    public function handshake(httpRequest: HttpRequest) {
         var httpResponse = new HttpResponse();
 
         httpResponse.headers.set(HttpHeader.SEC_WEBSOSCKET_VERSION, "13");
@@ -37,7 +37,8 @@ class WebSocketHandler extends Handler {
             httpResponse.code = 426;
             httpResponse.text = "Upgrade";
             httpResponse.headers.set(HttpHeader.CONNECTION, "close");
-            httpResponse.headers.set(HttpHeader.X_WEBSOCKET_REJECT_REASON, 'Unsupported websocket client version: ${httpRequest.headers.get(HttpHeader.SEC_WEBSOSCKET_VERSION)}, Only version 13 is supported.');
+            httpResponse.headers.set(HttpHeader.X_WEBSOCKET_REJECT_REASON,
+                'Unsupported websocket client version: ${httpRequest.headers.get(HttpHeader.SEC_WEBSOSCKET_VERSION)}, Only version 13 is supported.');
         } else if (httpRequest.headers.get(HttpHeader.UPGRADE) != "websocket") {
             httpResponse.code = 426;
             httpResponse.text = "Upgrade";
@@ -47,7 +48,8 @@ class WebSocketHandler extends Handler {
             httpResponse.code = 426;
             httpResponse.text = "Upgrade";
             httpResponse.headers.set(HttpHeader.CONNECTION, "close");
-            httpResponse.headers.set(HttpHeader.X_WEBSOCKET_REJECT_REASON, 'Unsupported connection header: ${httpRequest.headers.get(HttpHeader.CONNECTION)}.');
+            httpResponse.headers.set(HttpHeader.X_WEBSOCKET_REJECT_REASON,
+                'Unsupported connection header: ${httpRequest.headers.get(HttpHeader.CONNECTION)}.');
         } else {
             Log.debug('Handshaking', id);
             var key = httpRequest.headers.get(HttpHeader.SEC_WEBSOCKET_KEY);

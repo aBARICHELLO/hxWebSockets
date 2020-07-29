@@ -7,25 +7,26 @@ import haxe.io.Error;
 import hx.ws.Types;
 
 class WebSocketCommon {
-    private static var _nextId:Int = 1;
-    public var id:Int;
-    public var state:State = State.Handshake;
+    private static var _nextId: Int = 1;
+
+    public var id: Int;
+    public var state: State = State.Handshake;
 
     public var isClient = true;
 
-    private var _socket:SocketImpl;
+    private var _socket: SocketImpl;
 
-    private var _onopenCalled:Null<Bool> = null;
-    private var _lastError:Dynamic = null;
+    private var _onopenCalled: Null<Bool> = null;
+    private var _lastError: Dynamic = null;
 
-    public var onopen:Void->Void;
-    public var onclose:Void->Void;
-    public var onerror:Dynamic->Void;
-    public var onmessage:MessageType->Void;
+    public var onopen: Void->Void;
+    public var onclose: Void->Void;
+    public var onerror: Dynamic->Void;
+    public var onmessage: MessageType->Void;
 
-    private var _buffer:Buffer = new Buffer();
+    private var _buffer: Buffer = new Buffer();
 
-    public function new(socket:SocketImpl = null) {
+    public function new(socket: SocketImpl = null) {
         id = _nextId++;
         if (socket == null) {
             _socket = new SocketImpl();
@@ -35,7 +36,7 @@ class WebSocketCommon {
         }
     }
 
-    public function send(data:Any) {
+    public function send(data: Any) {
         if (Std.is(data, String)) {
             Log.data(data, id);
             sendFrame(Utf8Encoder.encode(data), OpCode.Text);
@@ -46,24 +47,25 @@ class WebSocketCommon {
         }
     }
 
-    private function sendFrame(data:Bytes, type:OpCode) {
+    private function sendFrame(data: Bytes, type: OpCode) {
         writeBytes(prepareFrame(data, type, true));
     }
 
-    private var _isFinal:Bool;
-    private var _isMasked:Bool;
-    private var _opcode:OpCode;
-    private var _frameIsBinary:Bool;
-    private var _partialLength:Int;
-    private var _length:Int;
-    private var _mask:Bytes;
-    private var _payload:Buffer = null;
-    private var _lastPong:Date = null;
+    private var _isFinal: Bool;
+    private var _isMasked: Bool;
+    private var _opcode: OpCode;
+    private var _frameIsBinary: Bool;
+    private var _partialLength: Int;
+    private var _length: Int;
+    private var _mask: Bytes;
+    private var _payload: Buffer = null;
+    private var _lastPong: Date = null;
 
     private function handleData() {
         switch (state) {
             case State.Head:
-                if (_buffer.available < 2) return;
+                if (_buffer.available < 2)
+                    return;
 
                 var b0 = _buffer.readByte();
                 var b1 = _buffer.readByte();
@@ -78,12 +80,15 @@ class WebSocketCommon {
                 handleData(); // may be more data
             case State.HeadExtraLength:
                 if (_partialLength == 126) {
-                    if (_buffer.available < 2) return;
+                    if (_buffer.available < 2)
+                        return;
                     _length = _buffer.readUnsignedShort();
                 } else if (_partialLength == 127) {
-                    if (_buffer.available < 8) return;
+                    if (_buffer.available < 8)
+                        return;
                     var tmp = _buffer.readUnsignedInt();
-                    if(tmp != 0) throw 'message too long';
+                    if (tmp != 0)
+                        throw 'message too long';
                     _length = _buffer.readUnsignedInt();
                 } else {
                     _length = _partialLength;
@@ -92,13 +97,15 @@ class WebSocketCommon {
                 handleData(); // may be more data
             case State.HeadExtraMask:
                 if (_isMasked) {
-                    if (_buffer.available < 4) return;
+                    if (_buffer.available < 4)
+                        return;
                     _mask = _buffer.readBytes(4);
                 }
                 state = State.Body;
                 handleData(); // may be more data
             case State.Body:
-                if (_buffer.available < _length) return;
+                if (_buffer.available < _length)
+                    return;
                 if (_payload == null) {
                     _payload = new Buffer();
                 }
@@ -130,7 +137,8 @@ class WebSocketCommon {
                         close();
                 }
 
-                if (state != State.Closed) state = State.Head;
+                if (state != State.Closed)
+                    state = State.Head;
                 handleData(); // may be more data
             case State.Closed:
                 close();
@@ -146,7 +154,7 @@ class WebSocketCommon {
                 sendFrame(Bytes.alloc(0), OpCode.Close);
                 state = State.Closed;
                 _socket.close();
-            } catch (e:Dynamic) { }
+            } catch (e:Dynamic) {}
 
             if (onclose != null) {
                 onclose();
@@ -154,7 +162,7 @@ class WebSocketCommon {
         }
     }
 
-    private function writeBytes(data:Bytes) {
+    private function writeBytes(data: Bytes) {
         try {
             _socket.output.write(data);
             _socket.output.flush();
@@ -166,7 +174,7 @@ class WebSocketCommon {
         }
     }
 
-    private function prepareFrame(data:Bytes, type:OpCode, isFinal:Bool):Bytes {
+    private function prepareFrame(data: Bytes, type: OpCode, isFinal: Bool): Bytes {
         var out = new Buffer();
         var isMasked = isClient; // All clientes messages must be masked: http://tools.ietf.org/html/rfc6455#section-5.1
         var mask = generateMask();
@@ -185,7 +193,8 @@ class WebSocketCommon {
             out.writeInt(data.length);
         }
 
-        if (isMasked) out.writeBytes(mask);
+        if (isMasked)
+            out.writeBytes(mask);
 
         out.writeBytes(isMasked ? applyMask(data, mask) : data);
         return out.readAllAvailableBytes();
@@ -200,9 +209,10 @@ class WebSocketCommon {
         return maskData;
     }
 
-    private static function applyMask(payload:Bytes, mask:Bytes) {
+    private static function applyMask(payload: Bytes, mask: Bytes) {
         var maskedPayload = Bytes.alloc(payload.length);
-        for (n in 0 ... payload.length) maskedPayload.set(n, payload.get(n) ^ mask.get(n % mask.length));
+        for (n in 0...payload.length)
+            maskedPayload.set(n, payload.get(n) ^ mask.get(n % mask.length));
         return maskedPayload;
     }
 
@@ -237,7 +247,7 @@ class WebSocketCommon {
                     while (true) {
                         var data = Bytes.alloc(1024);
                         var read = _socket.input.readBytes(data, 0, data.length);
-                        if (read <= 0){
+                        if (read <= 0) {
                             break;
                         }
                         Log.debug("Bytes read: " + read, id);
@@ -245,7 +255,6 @@ class WebSocketCommon {
                     }
                 } catch (e:Dynamic) {
                     #if cs
-
                     needClose = true;
                     if (Std.is(e, cs.system.io.IOException)) {
                         var ioex = cast(e, cs.system.io.IOException);
@@ -255,9 +264,7 @@ class WebSocketCommon {
                         }
                     }
                     #else
-
-                    needClose = !(e == 'Blocking' || (Std.is(e, Error) && (e:Error).match(Error.Blocked)));
-
+                    needClose = !(e == 'Blocking' || (Std.is(e, Error) && (e: Error).match(Error.Blocked)));
                     #end
                 }
 
@@ -273,7 +280,7 @@ class WebSocketCommon {
                     Log.debug("Closed", id);
                     state = State.Closed;
                     _socket.close();
-                } catch (e:Dynamic) { }
+                } catch (e:Dynamic) {}
 
                 if (onclose != null) {
                     onclose();
@@ -282,7 +289,7 @@ class WebSocketCommon {
         }
     }
 
-    public function sendHttpRequest(httpRequest:HttpRequest) {
+    public function sendHttpRequest(httpRequest: HttpRequest) {
         var data = httpRequest.build();
 
         Log.data(data, id);
@@ -298,7 +305,7 @@ class WebSocketCommon {
         }
     }
 
-    public function sendHttpResponse(httpResponse:HttpResponse) {
+    public function sendHttpResponse(httpResponse: HttpResponse) {
         var data = httpResponse.build();
 
         Log.data(data, id);
@@ -307,7 +314,7 @@ class WebSocketCommon {
         _socket.output.flush();
     }
 
-    public function recvHttpRequest():HttpRequest {
+    public function recvHttpRequest(): HttpRequest {
         if (!_buffer.endsWith("\r\n\r\n")) {
             return null;
         }
@@ -319,7 +326,6 @@ class WebSocketCommon {
                 break;
             }
             httpRequest.addLine(line);
-
         }
 
         Log.data(httpRequest.toString(), id);
@@ -327,7 +333,7 @@ class WebSocketCommon {
         return httpRequest;
     }
 
-    public function recvHttpResponse():HttpResponse {
+    public function recvHttpResponse(): HttpResponse {
         var response = _buffer.readLinesUntil("\r\n\r\n");
 
         if (response == null) {
@@ -340,7 +346,6 @@ class WebSocketCommon {
                 break;
             }
             httpResponse.addLine(line);
-
         }
 
         Log.data(httpResponse.toString(), id);
@@ -348,7 +353,7 @@ class WebSocketCommon {
         return httpResponse;
     }
 
-    private inline function makeWSKeyResponse(key:String):String {
+    private inline function makeWSKeyResponse(key: String): String {
         return Base64.encode(Sha1.make(Bytes.ofString(key + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11')));
     }
 }

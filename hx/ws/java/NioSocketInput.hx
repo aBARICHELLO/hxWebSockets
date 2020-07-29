@@ -6,10 +6,10 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
 class NioSocketInput extends NativeInput {
-    public var socket:NioSocket;
-    public var pipedOutputStream:PipedOutputStream;
+    public var socket: NioSocket;
+    public var pipedOutputStream: PipedOutputStream;
 
-    public function new(socket:NioSocket) {
+    public function new(socket: NioSocket) {
         try {
             pipedOutputStream = new PipedOutputStream();
             super(new PipedInputStream(pipedOutputStream));
@@ -19,7 +19,7 @@ class NioSocketInput extends NativeInput {
         }
     }
 
-    public override function readBytes(s:Bytes, pos:Int, len:Int):Int {
+    public override function readBytes(s: Bytes, pos: Int, len: Int): Int {
         if (stream.available() == 0) {
             return 0;
         }

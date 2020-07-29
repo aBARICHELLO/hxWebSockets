@@ -1,19 +1,19 @@
 package hx.ws;
 
 class Log {
-    public static inline var INFO:Int =  0x000001;
-    public static inline var DEBUG:Int = 0x000010;
-    public static inline var DATA:Int =  0x000100;
+    public static inline var INFO: Int = 0x000001;
+    public static inline var DEBUG: Int = 0x000010;
+    public static inline var DATA: Int = 0x000100;
 
-    public static var mask:Int = 0;
+    public static var mask: Int = 0;
 
     #if sys
-    public static var logFn:Dynamic->Void = Sys.println;
+    public static var logFn: Dynamic->Void = Sys.println;
     #elseif js
-    public static var logFn:Dynamic->Void = js.html.Console.log;
+    public static var logFn: Dynamic->Void = js.html.Console.log;
     #end
-    
-    public static function info(data:String, id:Null<Int> = null) {
+
+    public static function info(data: String, id: Null<Int> = null) {
         if (mask & INFO != INFO) {
             return;
         }
@@ -25,7 +25,7 @@ class Log {
         }
     }
 
-    public static function debug(data:String, id:Null<Int> = null) {
+    public static function debug(data: String, id: Null<Int> = null) {
         if (mask & DEBUG != DEBUG) {
             return;
         }
@@ -37,7 +37,7 @@ class Log {
         }
     }
 
-    public static function data(data:String, id:Null<Int> = null) {
+    public static function data(data: String, id: Null<Int> = null) {
         if (mask & DATA != DATA) {
             return;
         }

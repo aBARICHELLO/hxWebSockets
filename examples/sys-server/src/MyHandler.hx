@@ -5,7 +5,7 @@ import hx.ws.WebSocketHandler;
 import hx.ws.Types;
 
 class MyHandler extends WebSocketHandler {
-    public function new(s:SocketImpl) {
+    public function new(s: SocketImpl) {
         super(s);
         onopen = function() {
             trace(id + ". OPEN");
@@ -16,9 +16,9 @@ class MyHandler extends WebSocketHandler {
         onmessage = function(message: MessageType) {
             switch (message) {
                 case BytesMessage(content):
-                    send("echo: " + content);
-                case StrMessage(content):
                     send(content);
+                case StrMessage(content):
+                    send("echo: " + content);
             }
         }
         onerror = function(error) {

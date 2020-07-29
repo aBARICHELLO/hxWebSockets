@@ -5,28 +5,22 @@ import haxe.MainLoop;
 import haxe.io.Error;
 
 @:generic
-class WebSocketServer
-    #if (haxe_ver < 4)
-    <T:(Constructible<SocketImpl->Void>, Handler)> {
-    #else
-    <T:Constructible<SocketImpl->Void> & Handler> {
-    #end
+class WebSocketServer<T:Constructible<SocketImpl->Void> & Handler> {
+    private var _serverSocket: SocketImpl;
+    private var _handlers: Array<T> = [];
 
-    private var _serverSocket:SocketImpl;
-    private var _handlers:Array<T> = [];
+    private var _host: String;
+    private var _port: Int;
+    private var _maxConnections: Int;
 
-    private var _host:String;
-    private var _port:Int;
-    private var _maxConnections:Int;
+    private var _stopServer: Bool = false;
 
-    private var _stopServer:Bool = false;
+    public var sleepAmount: Float = 0.01;
 
-    public var sleepAmount:Float = 0.01;
+    public var onClientAdded: T->Void = null;
+    public var onClientRemoved: T->Void = null;
 
-    public var onClientAdded:T->Void = null;
-    public var onClientRemoved:T->Void = null;
-    
-    public function new(host:String, port:Int, maxConnections:Int = 1) {
+    public function new(host: String, port: Int, maxConnections: Int = 1) {
         _host = host;
         _port = port;
         _maxConnections = maxConnections;
@@ -42,7 +36,6 @@ class WebSocketServer
         Log.info('Starting server - ${_host}:${_port} (maxConnections: ${_maxConnections})');
 
         #if cs
-
         while (true) {
             var continueLoop = tick();
             if (continueLoop == false) {
@@ -51,14 +44,11 @@ class WebSocketServer
 
             Sys.sleep(sleepAmount);
         }
-
         #else
-
         MainLoop.add(function() {
             tick();
             Sys.sleep(sleepAmount);
         });
-
         #end
     }
 
@@ -70,12 +60,12 @@ class WebSocketServer
             _handlers = [];
             try {
                 _serverSocket.close();
-            } catch (e:Dynamic) { }
+            } catch (e:Dynamic) {}
             return false;
         }
 
         try {
-            var clientSocket:SocketImpl = _serverSocket.accept();
+            var clientSocket: SocketImpl = _serverSocket.accept();
             var handler = new T(clientSocket);
             _handlers.push(handler);
             Log.debug("Adding to web server handler to list - total: " + _handlers.length, handler.id);

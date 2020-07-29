@@ -6,9 +6,9 @@ import java.nio.ByteBuffer;
 
 @:access(hx.ws.java.NioSocket)
 class NioSocketOutput extends BytesOutput {
-    public var socket:NioSocket;
+    public var socket: NioSocket;
 
-    public function new(socket:NioSocket) {
+    public function new(socket: NioSocket) {
         super();
         this.socket = socket;
     }

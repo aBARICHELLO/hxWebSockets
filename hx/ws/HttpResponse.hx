@@ -1,17 +1,16 @@
 package hx.ws;
 
 class HttpResponse {
-    public var httpVersion:String = "HTTP/1.1";
-    public var code:Int = -1;
-    public var text:String = "";
-    public var responseDataString:String = null;
-    
-    public var headers:Map<String, String> = new Map<String, String>();
+    public var httpVersion: String = "HTTP/1.1";
+    public var code: Int = -1;
+    public var text: String = "";
+    public var responseDataString: String = null;
 
-    public function new() {
-    }
+    public var headers: Map<String, String> = new Map<String, String>();
 
-    public function addLine(line:String) {
+    public function new() {}
+
+    public function addLine(line: String) {
         if (code == -1) {
             var parts = line.split(" ");
             httpVersion = parts[0];
@@ -25,15 +24,14 @@ class HttpResponse {
         }
     }
 
-    public function build():String {
+    public function build(): String {
         var contentLength = 0;
         if (responseDataString != null && responseDataString.length > 0) {
             contentLength = responseDataString.length;
         }
         headers.set("Content-Length", Std.string(contentLength));
-        
-        
-        var sb:StringBuf = new StringBuf();
+
+        var sb: StringBuf = new StringBuf();
 
         sb.add(httpVersion);
         sb.add(" ");
@@ -52,15 +50,15 @@ class HttpResponse {
         }
 
         sb.add("\r\n");
-        
+
         if (responseDataString != null && responseDataString.length > 0) {
             sb.add(responseDataString);
         }
-        
+
         return sb.toString();
     }
 
-    public function toString():String {
+    public function toString(): String {
         return build();
     }
 }

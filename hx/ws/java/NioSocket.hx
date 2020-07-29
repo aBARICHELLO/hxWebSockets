@@ -14,25 +14,23 @@ import sys.net.Host;
 
 @:access(sys.net.Host)
 class NioSocket {
+    public var input(default, null): haxe.io.Input;
+    public var output(default, null): haxe.io.Output;
 
-    public var input(default,null) : haxe.io.Input;
-    public var output(default,null) : haxe.io.Output;
+    public var custom: Dynamic;
 
-    public var custom : Dynamic;
+    private var sock: java.net.Socket;
+    private var server: java.net.ServerSocket;
 
-    private var sock:java.net.Socket;
-    private var server:java.net.ServerSocket;
+    private var selector: Selector;
+    private var serverChannel: ServerSocketChannel;
+    private var channel: SocketChannel;
 
-    private var selector:Selector;
-    private var serverChannel:ServerSocketChannel;
-    private var channel:SocketChannel;
+    private var boundAddr: SocketAddress;
 
-    private var boundAddr:SocketAddress;
+    public function new(): Void {}
 
-    public function new():Void {
-    }
-
-    private function createServer():Void {
+    private function createServer(): Void {
         if (selector == null && serverChannel == null) {
             this.selector = Selector.open();
             this.serverChannel = ServerSocketChannel.open();
@@ -40,7 +38,7 @@ class NioSocket {
         }
     }
 
-    public function close():Void {
+    public function close(): Void {
         if (serverChannel != null) {
             server.close();
         }
@@ -49,23 +47,23 @@ class NioSocket {
         }
     }
 
-    public function read():String {
+    public function read(): String {
         return input.readAll().toString();
     }
 
-    public function write(content:String):Void {
+    public function write(content: String): Void {
         output.writeString(content);
     }
 
-    public function connect(host:Host, port:Int):Void {
+    public function connect(host: Host, port: Int): Void {
         sock.connect(new InetSocketAddress(host.wrapped, port));
         /*
-        this.output = new java.io.NativeOutput(sock.getOutputStream());
-        this.input = new java.io.NativeInput(sock.getInputStream());
-        */
+            this.output = new java.io.NativeOutput(sock.getOutputStream());
+            this.input = new java.io.NativeInput(sock.getInputStream());
+         */
     }
 
-    public function listen(connections:Int):Void {
+    public function listen(connections: Int): Void {
         if (boundAddr == null) {
             throw "You must bind the Socket to an address!";
         }
@@ -75,19 +73,20 @@ class NioSocket {
         serverChannel.register(selector, SelectionKey.OP_ACCEPT);
     }
 
-    public function shutdown(read:Bool, write:Bool):Void {
+    public function shutdown(read: Bool, write: Bool): Void {
         throw "Not implemented";
     }
 
-    public function bind( host:Host, port:Int):Void {
+    public function bind(host: Host, port: Int): Void {
         if (boundAddr != null) {
-            if (server.isBound()) throw "Already bound";
+            if (server.isBound())
+                throw "Already bound";
         }
         createServer();
         this.boundAddr = new InetSocketAddress(host.wrapped, port);
     }
 
-    public function accept():NioSocket {
+    public function accept(): NioSocket {
         if (selector.select() <= 0) {
             throw "Blocking"; // not really the right thing to throw
         }
@@ -116,32 +115,32 @@ class NioSocket {
         return s;
     }
 
-    public function peer():{host:Host, port:Int} {
+    public function peer(): {host: Host, port: Int} {
         throw "Not implemented";
         return null;
     }
 
-    public function host():{host:Host, port:Int} {
+    public function host(): {host: Host, port: Int} {
         throw "Not implemented";
         return null;
     }
 
-    public function setTimeout(timeout:Float ):Void {
+    public function setTimeout(timeout: Float): Void {
         throw "Not implemented";
     }
 
-    public function waitForRead():Void {
+    public function waitForRead(): Void {
         throw "Not implemented";
     }
 
-    public function setBlocking(b:Bool):Void {
-    }
+    public function setBlocking(b: Bool): Void {}
 
-    public function setFastSend(b:Bool):Void {
+    public function setFastSend(b: Bool): Void {
         throw "Not implemented";
     }
 
-    public static function select(read:Array<NioSocket>, write:Array<NioSocket>, others:Array<NioSocket>, ?timeout:Float) : { read:Array<NioSocket>, write:Array<NioSocket>, others:Array<NioSocket> } {
+    public static function select(read: Array<NioSocket>, write: Array<NioSocket>, others: Array<NioSocket>,
+            ?timeout: Float): {read: Array<NioSocket>, write: Array<NioSocket>, others: Array<NioSocket>} {
         if (write != null && write.length > 0) {
             throw "Not implemented";
         }
@@ -174,7 +173,7 @@ class NioSocket {
                                 key.cancel();
                                 throw "Blocking"; // not really the right thing to throw
                             }
-                            var copy:NativeArray<Int8> = new NativeArray(bytesRead);
+                            var copy: NativeArray<Int8> = new NativeArray(bytesRead);
                             System.arraycopy(buffer.array(), 0, copy, 0, bytesRead);
                             cast(r.input, NioSocketInput).pipedOutputStream.write(copy, 0, bytesRead);
                         }

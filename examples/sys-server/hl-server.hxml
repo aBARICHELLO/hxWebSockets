@@ -1,4 +1,5 @@
 -cp src
 --main Main
 -lib socket-bar
--hl bin/hl
+-lib hashlink
+-hl bin/hl/Main.hl

@@ -4,7 +4,6 @@ import hx.ws.Types;
 #if js
 import haxe.Constraints.Function;
 import haxe.io.Bytes;
-
 typedef JsBuffer = js.lib.ArrayBuffer;
 
 class WebSocket { // lets use composition so we can intercept send / onmessage and convert to something haxey if its binary

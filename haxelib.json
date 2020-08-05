@@ -1,15 +1,27 @@
 {
-    "version": "1.3.4",
+    "version": "1.4.0",
     "contributors": [
+        "barichello",
         "ianharrigan"
     ],
     "dependencies": {},
-    "releasenote": "Compilation fix",
-    "tags": [
-        "websockets"
+    "releasenote": "Check repository",
+    "tags" : [
+        "websockets",
+        "ws",
+        "wss",
+        "js",
+        "cpp",
+        "swf",
+        "php",
+        "python",
+        "java",
+        "c#",
+        "ssl",
+        "openssl"
     ],
     "license": "MIT",
-    "name": "hxWebSockets",
-    "description": "websockets for all haxe platforms",
-    "url": "https://github.com/ianharrigan/hxWebSockets"
+    "name": "socket-bar",
+    "description": "Websockets for multiple Haxe platforms",
+    "url": "https://github.com/aBARICHELLO/socket-bar"
 }

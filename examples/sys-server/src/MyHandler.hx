@@ -16,9 +16,11 @@ class MyHandler extends WebSocketHandler {
         onmessage = function(message: MessageType) {
             switch (message) {
                 case BytesMessage(content):
-                    send(content);
+                    trace(content.readAllAvailableBytes());
                 case StrMessage(content):
-                    send("echo: " + content);
+                    var str = "echo: " + content;
+                    trace(str);
+                    send(str);
             }
         }
         onerror = function(error) {

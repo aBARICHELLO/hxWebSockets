@@ -117,14 +117,16 @@ class WebSocketCommon {
                             var messageData = _payload.readAllAvailableBytes();
                             var unmaskedMessageData = (_isMasked) ? applyMask(messageData, _mask) : messageData;
                             if (_frameIsBinary) {
-                                if (this.onmessage != null) {
-                                    this.onmessage(BytesMessage(unmaskedMessageData));
+                                if (onmessage != null) {
+                                    var buffer = new Buffer();
+                                    buffer.writeBytes(unmaskedMessageData);
+                                    onmessage(BytesMessage(buffer));
                                 }
                             } else {
                                 var stringPayload = Utf8Encoder.decode(unmaskedMessageData);
                                 Log.data(stringPayload, id);
-                                if (this.onmessage != null) {
-                                    this.onmessage(StrMessage(stringPayload));
+                                if (onmessage != null) {
+                                    onmessage(StrMessage(stringPayload));
                                 }
                             }
                             _payload = null;

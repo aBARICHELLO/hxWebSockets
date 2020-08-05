@@ -15,6 +15,6 @@ typedef BinaryType = js.html.BinaryType;
 #end
 
 enum MessageType {
-    BytesMessage(content: Bytes);
+    BytesMessage(content: Buffer);
     StrMessage(content: String);
 }

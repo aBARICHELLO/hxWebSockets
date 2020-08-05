@@ -4,11 +4,8 @@ import hx.ws.Types;
 #if js
 import haxe.Constraints.Function;
 import haxe.io.Bytes;
-#if (haxe_ver < 4)
-typedef JsBuffer = js.html.ArrayBuffer;
-#else
+
 typedef JsBuffer = js.lib.ArrayBuffer;
-#end
 
 class WebSocket { // lets use composition so we can intercept send / onmessage and convert to something haxey if its binary
     private var _url: String;
@@ -71,14 +68,14 @@ class WebSocket { // lets use composition so we can intercept send / onmessage a
 
     private function set_onmessage(value: Function): Function {
         _onmessage = value;
-        _ws.onmessage = function(message: MessageType) {
+        _ws.onmessage = function(message: Dynamic) {
             if (_onmessage != null) {
-                switch (message) {
-                    case BytesMessage(content):
-                        _onmessage(BytesMessage(content));
-
-                    case StrMessage(content):
-                        _onmessage(StrMessage(content));
+                if (Std.is(message, JsBuffer)) {
+                    var buffer = new Buffer();
+                    buffer.writeBytes(Bytes.ofData(message));
+                    _onmessage(BytesMessage(buffer));
+                } else {
+                    _onmessage(StrMessage(message));
                 }
             }
         };
@@ -101,21 +98,14 @@ class WebSocket { // lets use composition so we can intercept send / onmessage a
     }
 
     public function send(data: Any) {
-        if (Std.is(data, Buffer)) {
-            var buffer = cast(data, Buffer);
-            _ws.send(buffer.readAllAvailableBytes().getData());
-        } else {
-            _ws.send(data);
-        }
+        _ws.send(data);
     }
 }
 #elseif sys
-#if (haxe_ver >= 4)
-import sys.thread.Thread;
-#elseif neko
-import neko.vm.Thread;
-#elseif cpp
+#if cpp
 import cpp.vm.Thread;
+#else
+import sys.thread.Thread;
 #end
 import haxe.crypto.Base64;
 import haxe.io.Bytes;
